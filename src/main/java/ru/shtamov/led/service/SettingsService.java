@@ -1,113 +1,118 @@
 package ru.shtamov.led.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import ru.shtamov.led.config.Esp32Config;
-import ru.shtamov.led.model.BaseSettingsDTO;
-import ru.shtamov.led.model.FlashSettingsDTO;
-import ru.shtamov.led.model.SettingsRequestDTO;
-import ru.shtamov.led.model.SettingsResponseDTO;
+import ru.shtamov.led.model.domain.FlashSettings;
+import ru.shtamov.led.model.domain.RainbowSettings;
+import ru.shtamov.led.model.domain.Setting;
+import ru.shtamov.led.model.domain.VolumeSettings;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-@RequiredArgsConstructor
+@Slf4j
 @Service
 public class SettingsService {
 
     private final RestTemplate restTemplate;
     private final Esp32Config esp32Config;
 
-    public SettingsResponseDTO updateSettings(SettingsRequestDTO request) {
-        SettingsResponseDTO response = new SettingsResponseDTO();
+    private final Map<Integer, Setting> settingMap = new HashMap<>();
+    private Boolean isConnected = false;
 
-        // Имитация задержки сети
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    public SettingsService(RestTemplate restTemplate, Esp32Config esp32Config) {
+        this.restTemplate = restTemplate;
+        this.esp32Config = esp32Config;
 
-        response.setStatus("success");
-        response.setMessage("Настройки успешно отправлены на ESP32 (заглушка)");
-
-        // Сохраняем переданные настройки в ответе
-        response.setMode(request.getMode());
-
-        if (request.getVuGreenRed() != null) {
-            response.setVuGreenRed(request.getVuGreenRed());
-        } else {
-            BaseSettingsDTO vuGreenRed = new BaseSettingsDTO();
-            vuGreenRed.setSensitivity(70);
-            vuGreenRed.setBrightness(80);
-            vuGreenRed.setBgBrightness(10);
-            vuGreenRed.setSmoothing(30);
-            vuGreenRed.setBgColor("#000000");
-            response.setVuGreenRed(vuGreenRed);
-        }
-
-        if (request.getVuRainbow() != null) {
-            response.setVuRainbow(request.getVuRainbow());
-        } else {
-            BaseSettingsDTO vuRainbow = new BaseSettingsDTO();
-            vuRainbow.setSensitivity(70);
-            vuRainbow.setBrightness(80);
-            vuRainbow.setBgBrightness(10);
-            vuRainbow.setSmoothing(30);
-            vuRainbow.setBgColor("#000000");
-            response.setVuRainbow(vuRainbow);
-        }
-
-        if (request.getFlash() != null) {
-            response.setFlash(request.getFlash());
-        } else {
-            FlashSettingsDTO flash = new FlashSettingsDTO();
-            flash.setSensitivity(80);
-            flash.setBrightness(100);
-            flash.setSmoothing(10);
-            flash.setColor("#FFFFFF");
-            response.setFlash(flash);
-        }
-
-        return response;
-    }
-
-    public SettingsResponseDTO getCurrentSettings() {
-        SettingsResponseDTO response = new SettingsResponseDTO();
-
-        response.setMode(0);
-
-        BaseSettingsDTO vuGreenRed = new BaseSettingsDTO();
+        VolumeSettings vuGreenRed = new VolumeSettings();
         vuGreenRed.setSensitivity(70);
         vuGreenRed.setBrightness(80);
         vuGreenRed.setBgBrightness(10);
         vuGreenRed.setSmoothing(30);
         vuGreenRed.setBgColor("#000000");
-        response.setVuGreenRed(vuGreenRed);
 
-        BaseSettingsDTO vuRainbow = new BaseSettingsDTO();
+        RainbowSettings vuRainbow = new RainbowSettings();
         vuRainbow.setSensitivity(70);
         vuRainbow.setBrightness(80);
         vuRainbow.setBgBrightness(10);
         vuRainbow.setSmoothing(30);
         vuRainbow.setBgColor("#000000");
-        response.setVuRainbow(vuRainbow);
 
-        FlashSettingsDTO flash = new FlashSettingsDTO();
+        FlashSettings flash = new FlashSettings();
         flash.setSensitivity(80);
         flash.setBrightness(100);
         flash.setSmoothing(10);
         flash.setColor("#FFFFFF");
-        response.setFlash(flash);
 
-        response.setStatus("success");
-        response.setMessage("Текущие настройки успешно получены");
-
-        return response;
+        settingMap.put(0, vuGreenRed);
+        settingMap.put(1, vuRainbow);
+        settingMap.put(2, flash);
     }
+
+    public VolumeSettings getVolumeSettings(){
+        VolumeSettings volumeSettings = (VolumeSettings) settingMap.get(0);
+
+        log.info("Volume settings are gotten");
+        return volumeSettings;
+    }
+
+    public RainbowSettings getRainbowSettings(){
+        RainbowSettings rainbowSettings = (RainbowSettings) settingMap.get(1);
+
+        log.info("Rainbow settings are gotten");
+        return rainbowSettings;
+    }
+
+    public FlashSettings getFlashSettings(){
+        FlashSettings flashSettings = (FlashSettings) settingMap.get(2);
+
+        log.info("Flash settings are gotten");
+        return flashSettings;
+    }
+
+    public VolumeSettings updateVolumeSettings(VolumeSettings volumeSettings){
+        settingMap.put(0, volumeSettings);
+
+        log.info("Volume settings are updated");
+        return volumeSettings;
+    }
+
+    public RainbowSettings updateRainbowSettings(RainbowSettings rainbowSettings){
+        settingMap.put(1, rainbowSettings);
+
+        log.info("Rainbow settings are updated");
+        return rainbowSettings;
+    }
+
+    public FlashSettings updateFlashSettings(FlashSettings flashSettings){
+        settingMap.put(2, flashSettings);
+
+        log.info("Flash settings are updated");
+        return flashSettings;
+    }
+
+    public Boolean getConnection(){
+        return isConnected;
+    }
+
+    public Boolean connect(String url){
+        log.info("Bla bla bla {} bla bla", url);
+
+        isConnected = true;
+
+        log.info("Led is connected");
+        return isConnected;
+    }
+
+    public Boolean disconnect(){
+        isConnected = false;
+
+        log.info("Led is disconnected");
+        return isConnected;
+    }
+
 
 //    public SettingsResponseDTO updateSettings(SettingsRequestDTO request) {
 //        SettingsResponseDTO response = new SettingsResponseDTO();

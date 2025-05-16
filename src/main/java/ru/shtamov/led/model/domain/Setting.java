@@ -1,17 +1,16 @@
-package ru.shtamov.led.model;
+package ru.shtamov.led.model.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public class FlashSettingsDTO {
+public abstract class Setting {
     private Integer sensitivity;
     private Integer brightness;
     private Integer smoothing;
-    private String color;
 }

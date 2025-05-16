@@ -1,0 +1,223 @@
+openapi: 3.0.1
+info:
+  title: Settings API
+  description: API для управления настройками
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082/api
+    description: Local server
+paths:
+
+  /volume:
+    get:
+      tags:
+        - Получение настроек
+      summary: Получить настройки Volume
+      responses:
+        '200':
+          description: Настройки Volume получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VolumeSettingsDTO'
+    patch:
+      tags:
+        - Обновление настроек
+      summary: Обновить настройки Volume
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VolumeSettingsDTO'
+            example:
+              mode: 1
+              sensitivity: 70
+              brightness: 80
+              bgBrightness: 10
+              smoothing: 30
+              bgColor: "#000000"
+      responses:
+        '200':
+          description: Настройки Volume обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VolumeSettingsDTO'
+
+  /rainbow:
+    get:
+      tags:
+        - Получение настроек
+      summary: Получить настройки Rainbow
+      responses:
+        '200':
+          description: Настройки Rainbow получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RainbowSettingsDTO'
+    patch:
+      tags:
+        - Обновление настроек
+      summary: Обновить настройки Rainbow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RainbowSettingsDTO'
+            example:
+              mode: 1
+              sensitivity: 70
+              brightness: 80
+              bgBrightness: 10
+              smoothing: 30
+              bgColor: "#000000"
+      responses:
+        '200':
+          description: Настройки Rainbow обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RainbowSettingsDTO'
+
+  /flash:
+    get:
+      tags:
+        - Получение настроек
+      summary: Получить настройки Flash
+      responses:
+        '200':
+          description: Настройки Flash получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashSettingsDTO'
+    patch:
+      tags:
+        - Обновление настроек
+      summary: Обновить настройки Flash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashSettingsDTO'
+            example:
+              mode: 1
+              sensitivity: 80
+              brightness: 100
+              smoothing: 10
+              color: "#FFFFFF"
+      responses:
+        '200':
+          description: Настройки Flash обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashSettingsDTO'
+
+
+  # Блок работы с подключением
+  /connection:
+    get:
+      tags:
+        - Работа с подключением
+      summary: Получить статус подключения
+      responses:
+        '200':
+          description: Статус подключения получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionGetDto'
+    patch:
+      tags:
+        - Работа с подключением
+      summary: Установить подключение
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionUpdateDto'
+            example:
+              ulr: "http://microcontroller-ip/33.32.11.32"
+      responses:
+        '200':
+          description: Подключение установлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionGetDto'
+  /disconnection:
+    patch:
+      tags:
+        - Работа с подключением
+      summary: Разорвать подключение
+      responses:
+        '200':
+          description: Подключение разорвано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionGetDto'
+
+components:
+  schemas:
+    ConnectionGetDto:
+      type: object
+      properties:
+        isConnected:
+          type: boolean
+    ConnectionUpdateDto:
+      type: object
+      required:
+        - ulr
+      properties:
+        ulr:
+          type: string
+    FlashSettingsDTO:
+      type: object
+      properties:
+        mode:
+          type: integer
+        sensitivity:
+          type: integer
+        brightness:
+          type: integer
+        smoothing:
+          type: integer
+        color:
+          type: string
+    RainbowSettingsDTO:
+      type: object
+      properties:
+        mode:
+          type: integer
+        sensitivity:
+          type: integer
+        brightness:
+          type: integer
+        bgBrightness:
+          type: integer
+        smoothing:
+          type: integer
+        bgColor:
+          type: string
+    VolumeSettingsDTO:
+      type: object
+      properties:
+        mode:
+          type: integer
+        sensitivity:
+          type: integer
+        brightness:
+          type: integer
+        bgBrightness:
+          type: integer
+        smoothing:
+          type: integer
+        bgColor:
+          type: string
