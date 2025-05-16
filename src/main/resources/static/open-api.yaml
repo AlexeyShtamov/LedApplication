@@ -4,7 +4,7 @@ info:
   description: API для управления настройками
   version: 1.0.0
 servers:
-  - url: http://localhost:8082/api
+  - url: http://ledapplication.onrender.com:8082/api
     description: Local server
 paths:
 
