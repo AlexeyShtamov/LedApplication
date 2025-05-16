@@ -1,4 +1,4 @@
 package ru.shtamov.led.model.dto;
 
-public record ConnectionUpdateDto(String ulr) {
+public record ConnectionUpdateDto(String url) {
 }

@@ -13,7 +13,6 @@ public class SettingConverter {
 
     public VolumeSettingsDTO toVolumeDto(VolumeSettings volumeSettings){
         return new VolumeSettingsDTO(
-                0,
                 volumeSettings.getSensitivity(),
                 volumeSettings.getBrightness(),
                 volumeSettings.getBgBrightness(),
@@ -24,7 +23,6 @@ public class SettingConverter {
 
     public RainbowSettingsDTO toRainbowDto(RainbowSettings volumeSettings){
         return new RainbowSettingsDTO(
-                1,
                 volumeSettings.getSensitivity(),
                 volumeSettings.getBrightness(),
                 volumeSettings.getBgBrightness(),
@@ -35,7 +33,6 @@ public class SettingConverter {
 
     public FlashSettingsDTO toFlashDto(FlashSettings volumeSettings){
         return new FlashSettingsDTO(
-                2,
                 volumeSettings.getSensitivity(),
                 volumeSettings.getBrightness(),
                 volumeSettings.getSmoothing(),

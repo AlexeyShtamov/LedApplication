@@ -60,7 +60,7 @@ public class SettingsController {
     @PatchMapping("/connection")
     public ResponseEntity<ConnectionGetDto> connect(@RequestBody ConnectionUpdateDto dto){
         return ResponseEntity
-                .ok(new ConnectionGetDto(settingsService.connect(dto.ulr())));
+                .ok(new ConnectionGetDto(settingsService.connect(dto.url())));
     }
 
     @PatchMapping("/disconnection")

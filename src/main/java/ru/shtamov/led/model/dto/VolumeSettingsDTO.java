@@ -5,7 +5,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 public class VolumeSettingsDTO {
-    private Integer mode;
     private Integer sensitivity;
     private Integer brightness;
     private Integer bgBrightness;

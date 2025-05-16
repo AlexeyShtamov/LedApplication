@@ -31,7 +31,6 @@ paths:
             schema:
               $ref: '#/components/schemas/VolumeSettingsDTO'
             example:
-              mode: 1
               sensitivity: 70
               brightness: 80
               bgBrightness: 10
@@ -68,7 +67,6 @@ paths:
             schema:
               $ref: '#/components/schemas/RainbowSettingsDTO'
             example:
-              mode: 1
               sensitivity: 70
               brightness: 80
               bgBrightness: 10
@@ -105,7 +103,6 @@ paths:
             schema:
               $ref: '#/components/schemas/FlashSettingsDTO'
             example:
-              mode: 1
               sensitivity: 80
               brightness: 100
               smoothing: 10
@@ -143,7 +140,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ConnectionUpdateDto'
             example:
-              ulr: "http://microcontroller-ip/33.32.11.32"
+              url: "http://microcontroller-ip/33.32.11.32"
       responses:
         '200':
           description: Подключение установлено
@@ -174,15 +171,13 @@ components:
     ConnectionUpdateDto:
       type: object
       required:
-        - ulr
+        - url
       properties:
-        ulr:
+        url:
           type: string
     FlashSettingsDTO:
       type: object
       properties:
-        mode:
-          type: integer
         sensitivity:
           type: integer
         brightness:
@@ -194,8 +189,6 @@ components:
     RainbowSettingsDTO:
       type: object
       properties:
-        mode:
-          type: integer
         sensitivity:
           type: integer
         brightness:
@@ -209,8 +202,6 @@ components:
     VolumeSettingsDTO:
       type: object
       properties:
-        mode:
-          type: integer
         sensitivity:
           type: integer
         brightness:
