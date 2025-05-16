@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.shtamov.led.config.Esp32Config;
+import ru.shtamov.led.exception.NoConnectionException;
 import ru.shtamov.led.model.domain.FlashSettings;
 import ru.shtamov.led.model.domain.RainbowSettings;
 import ru.shtamov.led.model.domain.Setting;
@@ -52,6 +53,8 @@ public class SettingsService {
     }
 
     public VolumeSettings getVolumeSettings(){
+        if (!isConnected) throw new NoConnectionException();
+
         VolumeSettings volumeSettings = (VolumeSettings) settingMap.get(0);
 
         log.info("Volume settings are gotten");
@@ -59,6 +62,8 @@ public class SettingsService {
     }
 
     public RainbowSettings getRainbowSettings(){
+        if (!isConnected) throw new NoConnectionException();
+
         RainbowSettings rainbowSettings = (RainbowSettings) settingMap.get(1);
 
         log.info("Rainbow settings are gotten");
@@ -66,6 +71,8 @@ public class SettingsService {
     }
 
     public FlashSettings getFlashSettings(){
+        if (!isConnected) throw new NoConnectionException();
+
         FlashSettings flashSettings = (FlashSettings) settingMap.get(2);
 
         log.info("Flash settings are gotten");
@@ -73,6 +80,8 @@ public class SettingsService {
     }
 
     public VolumeSettings updateVolumeSettings(VolumeSettings volumeSettings){
+        if (!isConnected) throw new NoConnectionException();
+
         settingMap.put(0, volumeSettings);
 
         log.info("Volume settings are updated");
@@ -80,6 +89,8 @@ public class SettingsService {
     }
 
     public RainbowSettings updateRainbowSettings(RainbowSettings rainbowSettings){
+        if (!isConnected) throw new NoConnectionException();
+
         settingMap.put(1, rainbowSettings);
 
         log.info("Rainbow settings are updated");
@@ -87,6 +98,8 @@ public class SettingsService {
     }
 
     public FlashSettings updateFlashSettings(FlashSettings flashSettings){
+        if (!isConnected) throw new NoConnectionException();
+
         settingMap.put(2, flashSettings);
 
         log.info("Flash settings are updated");
