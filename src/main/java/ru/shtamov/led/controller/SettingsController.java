@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.shtamov.led.converter.SettingConverter;
+import ru.shtamov.led.model.domain.FlashSettings;
+import ru.shtamov.led.model.domain.RainbowSettings;
+import ru.shtamov.led.model.domain.VolumeSettings;
 import ru.shtamov.led.model.dto.*;
 import ru.shtamov.led.service.SettingsService;
 
@@ -49,6 +52,18 @@ public class SettingsController {
     public ResponseEntity<FlashSettingsDTO> updateFlashSettings(@RequestBody FlashSettingsDTO request) {
         return ResponseEntity
                 .ok(settingConverter.toFlashDto(settingsService.updateFlashSettings(settingConverter.toFlashDomain(request))));
+    }
+
+    @GetMapping("/current")
+    public ResponseEntity<?> getCurrentSetting(){
+        int mode = settingsService.getCurrentMode();
+        
+        return switch (mode){
+            case 0 -> ResponseEntity.ok(settingConverter.toVolumeDto((VolumeSettings) settingsService.getCurrentSettings()));
+            case 1 -> ResponseEntity.ok(settingConverter.toRainbowDto((RainbowSettings) settingsService.getCurrentSettings()));
+            case 2 -> ResponseEntity.ok(settingConverter.toFlashDto((FlashSettings) settingsService.getCurrentSettings()));
+            default -> throw new IllegalStateException("Unexpected value: " + mode);
+        };
     }
 
     @GetMapping("/connection")

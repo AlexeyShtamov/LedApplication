@@ -1,7 +1,11 @@
 package ru.shtamov.led.service;
 
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import ru.shtamov.led.config.Esp32Config;
 import ru.shtamov.led.exception.NoConnectionException;
@@ -9,7 +13,11 @@ import ru.shtamov.led.model.domain.FlashSettings;
 import ru.shtamov.led.model.domain.RainbowSettings;
 import ru.shtamov.led.model.domain.Setting;
 import ru.shtamov.led.model.domain.VolumeSettings;
+import ru.shtamov.led.model.esp.FlashEsp;
+import ru.shtamov.led.model.esp.RainbowEsp;
+import ru.shtamov.led.model.esp.VolumeEsp;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +29,7 @@ public class SettingsService {
     private final Esp32Config esp32Config;
 
     private final Map<Integer, Setting> settingMap = new HashMap<>();
+    private int currentMode = 0;
     private Boolean isConnected = false;
 
     public SettingsService(RestTemplate restTemplate, Esp32Config esp32Config) {
@@ -82,7 +91,10 @@ public class SettingsService {
     public VolumeSettings updateVolumeSettings(VolumeSettings volumeSettings){
         if (!isConnected) throw new NoConnectionException();
 
+        updateSettings(0, volumeSettings);
+
         settingMap.put(0, volumeSettings);
+        currentMode = 0;
 
         log.info("Volume settings are updated");
         return volumeSettings;
@@ -91,7 +103,10 @@ public class SettingsService {
     public RainbowSettings updateRainbowSettings(RainbowSettings rainbowSettings){
         if (!isConnected) throw new NoConnectionException();
 
+        updateSettings(1, rainbowSettings);
+
         settingMap.put(1, rainbowSettings);
+        currentMode = 1;
 
         log.info("Rainbow settings are updated");
         return rainbowSettings;
@@ -100,10 +115,25 @@ public class SettingsService {
     public FlashSettings updateFlashSettings(FlashSettings flashSettings){
         if (!isConnected) throw new NoConnectionException();
 
+        updateSettings(2, flashSettings);
+
         settingMap.put(2, flashSettings);
+        currentMode = 2;
 
         log.info("Flash settings are updated");
         return flashSettings;
+    }
+
+    public Setting getCurrentSettings(){
+        Setting setting = settingMap.get(currentMode);
+
+        log.info("Current settings is found");
+
+        return setting;
+    }
+
+    public Integer getCurrentMode(){
+        return this.currentMode;
     }
 
     public Boolean getConnection(){
@@ -127,51 +157,33 @@ public class SettingsService {
     }
 
 
-//    public SettingsResponseDTO updateSettings(SettingsRequestDTO request) {
-//        SettingsResponseDTO response = new SettingsResponseDTO();
-//
-//        try {
-//            String url = "http://" + esp32Config.getIpAddress() + "/settings";
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_JSON);
-//            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-//
-//            HttpEntity<SettingsRequestDTO> entity = new HttpEntity<>(request, headers);
-//
-//            ResponseEntity<String> esp32Response = restTemplate.exchange(
-//                    url,
-//                    HttpMethod.POST,
-//                    entity,
-//                    String.class
-//            );
-//
-//            if (esp32Response.getStatusCode().is2xxSuccessful()) {
-//                response.setStatus("success");
-//                response.setMessage("Настройки успешно отправлены на ESP32");
-//            } else {
-//                response.setStatus("warning");
-//                response.setMessage("ESP32 вернул статус: " + esp32Response.getStatusCode());
-//            }
-//
-//        } catch (HttpClientErrorException e) {
-//            response.setStatus("error");
-//            response.setMessage("Ошибка HTTP при отправке на ESP32: " + e.getStatusCode());
-//        } catch (ResourceAccessException e) {
-//            response.setStatus("error");
-//            response.setMessage("Не удалось подключиться к ESP32 по адресу " + esp32Config.getIpAddress() +
-//                    ". Убедитесь, что он включен и находится в той же сети.");
-//        } catch (Exception e) {
-//            response.setStatus("error");
-//            response.setMessage("Произошла внутренняя ошибка сервера: " + e.getMessage());
-//        }
-//
-//        // Update the response with current settings
-//        response.setMode(request.getMode());
-//        response.setVuGreenRed(request.getVuGreenRed());
-//        response.setVuRainbow(request.getVuRainbow());
-//        response.setFlash(request.getFlash());
-//
-//        return response;
-//    }
+    private void updateSettings(int mode, Setting request) {
+
+        try {
+            String url = "http://" + esp32Config.getIpAddress() + "/settings";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+            HttpEntity<?> entity = switch (mode){
+                case 0 -> new HttpEntity<>(new VolumeEsp(0, (VolumeSettings) request), headers);
+                case 1 -> new HttpEntity<>(new RainbowEsp(1, (RainbowSettings) request), headers);
+                case 2 -> new HttpEntity<>(new FlashEsp(2, (FlashSettings) request), headers);
+                default -> throw new IllegalStateException("Unexpected value: " + mode);
+            };
+
+            ResponseEntity<String> esp32Response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            log.info("Status code from led: {}", esp32Response.getStatusCode());
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
 }

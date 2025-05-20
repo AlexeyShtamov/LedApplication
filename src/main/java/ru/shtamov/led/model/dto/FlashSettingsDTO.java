@@ -5,6 +5,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 public class FlashSettingsDTO {
+    private Integer mode;
     private Integer sensitivity;
     private Integer brightness;
     private Integer smoothing;

@@ -115,6 +115,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/FlashSettingsDTO'
 
+  /current:
+    get:
+      tags:
+        - Получение настроек
+      summary: Получить текущие настройки (в зависимости от режима)
+      responses:
+        '200':
+          description: Текущие настройки получены
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/VolumeSettingsDTO'
+                  - $ref: '#/components/schemas/RainbowSettingsDTO'
+                  - $ref: '#/components/schemas/FlashSettingsDTO'
+              examples:
+                volume:
+                  value:
+                    mode: 0
+                    sensitivity: 70
+                    brightness: 80
+                    bgBrightness: 10
+                    smoothing: 30
+                    bgColor: "#000000"
+                rainbow:
+                  value:
+                    mode: 1
+                    sensitivity: 70
+                    brightness: 80
+                    bgBrightness: 10
+                    smoothing: 30
+                    bgColor: "#000000"
+                flash:
+                  value:
+                    mode: 2
+                    sensitivity: 80
+                    brightness: 100
+                    smoothing: 10
+                    color: "#FFFFFF"
 
   # Блок работы с подключением
   /connection:
@@ -178,6 +217,8 @@ components:
     FlashSettingsDTO:
       type: object
       properties:
+        mode:
+          type: integer
         sensitivity:
           type: integer
         brightness:
@@ -189,6 +230,8 @@ components:
     RainbowSettingsDTO:
       type: object
       properties:
+        mode:
+          type: integer
         sensitivity:
           type: integer
         brightness:
@@ -202,6 +245,8 @@ components:
     VolumeSettingsDTO:
       type: object
       properties:
+        mode:
+          type: integer
         sensitivity:
           type: integer
         brightness:
